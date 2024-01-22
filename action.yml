@@ -1,0 +1,25 @@
+name: "webhook-activator"
+description: "An action to activate all webhooks in an org and all of its repos"
+inputs:
+  target_orgs:
+    description: "Orgs to do this on. If more than 1, comma or newline seperated"
+    required: false
+  target_github_app_id:
+    description: "Target GitHub App ID"
+    required: false
+  target_github_app_private_key:
+    description: "Target GitHub App private key"
+    required: false
+  target_github_app_installation_id:
+    description: "Target GitHub App installation ID"
+    required: false
+  target_github_pat:
+    description: "Personal access token if using that to auth instead of an app"
+    required: false
+  target_github_api_url:
+    description: "Target GitHub API URL"
+    required: false
+    default: "https://api.github.com"
+runs:
+  using: "node20"
+  main: "dist/index.js"
