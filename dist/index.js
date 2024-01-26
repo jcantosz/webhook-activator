@@ -40536,7 +40536,7 @@ const { createAppAuth } = __nccwpck_require__(4167);
 const core = __nccwpck_require__(6150);
 
 // Get action inputs
-const targetOrgs = core.getInput("target_orgs").split(/[,\n]+/) || core.getInput("target_org");
+const targetOrgs = core.getInput("target_orgs").split(/[,\n]+/);
 
 const targetPAT = core.getInput("target_github_pat");
 
@@ -40683,7 +40683,7 @@ async function activateAllRepoWebhooks(org, repo) {
 async function main() {
   try {
     for (const org of targetOrgs) {
-      console.log(`Activating webhooks for org:"${org}`);
+      console.log(`Activating webhooks for org:"${org}"`);
       await activateAllOrgWebhooks(org);
       console.log("");
       const repos = await getOrgRepos(org);
