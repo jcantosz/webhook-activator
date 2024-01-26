@@ -1,6 +1,9 @@
 name: "webhook-activator"
 description: "An action to activate all webhooks in an org and all of its repos"
 inputs:
+  target_org:
+    description: "Org to do this on. If more than 1, use target_orgs instead. This exists for consistency with other GEI migration inputs"
+    required: false
   target_orgs:
     description: "Orgs to do this on. If more than 1, comma or newline seperated"
     required: false

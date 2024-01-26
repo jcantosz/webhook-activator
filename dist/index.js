@@ -40536,14 +40536,14 @@ const { createAppAuth } = __nccwpck_require__(4167);
 const core = __nccwpck_require__(6150);
 
 // Get action inputs
-const targetOrgs = core.getInput("target_orgs").split(/[,\n]+/);
+const targetOrgs = core.getInput("target_orgs").split(/[,\n]+/) || core.getInput("target_org");
 
 const targetPAT = core.getInput("target_github_pat");
 
-const targetAppId = core.getInput("target_github_app_id") || sourceAppId;
-const targetAppPrivateKey = core.getInput("target_github_app_private_key") || sourceAppPrivateKey;
-const targetAppInstallationId = core.getInput("target_github_app_installation_id") || sourceAppInstallationId;
-const targetAPIUrl = core.getInput("target_github_api_url") || sourceAPIUrl;
+const targetAppId = core.getInput("target_github_app_id");
+const targetAppPrivateKey = core.getInput("target_github_app_private_key");
+const targetAppInstallationId = core.getInput("target_github_app_installation_id");
+const targetAPIUrl = core.getInput("target_github_api_url");
 
 let failedActivations = [];
 
