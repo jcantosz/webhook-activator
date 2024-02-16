@@ -3,6 +3,7 @@ const fs = require("fs");
 const { Octokit } = require("@octokit/rest");
 const { createAppAuth } = require("@octokit/auth-app");
 const core = require("@actions/core");
+const { throttling } = require("@octokit/plugin-throttling");
 
 // Get action inputs
 const targetOrgs = core.getInput("target_orgs").split(/[,\n]+/);
@@ -13,6 +14,8 @@ const targetAppId = core.getInput("target_github_app_id");
 const targetAppPrivateKey = core.getInput("target_github_app_private_key");
 const targetAppInstallationId = core.getInput("target_github_app_installation_id");
 const targetAPIUrl = core.getInput("target_github_api_url");
+
+const MyOctokit = Octokit.plugin(throttling);
 
 let failedActivations = [];
 
@@ -30,8 +33,24 @@ const octokit = createOctokitInstance(
 // Function to create Octokit instance
 function createOctokitInstance(PAT, appId, appPrivateKey, appInstallationId, apiUrl) {
   // Prefer app auth to PAT if both are available
+  const throttle = {
+    onRateLimit: (retryAfter, options, octokit, retryCount) => {
+      octokit.log.warn(`Request quota exhausted for request ${options.method} ${options.url}`);
+
+      if (retryCount < 1) {
+        // only retries once
+        octokit.log.info(`Retrying after ${retryAfter} seconds!`);
+        return true;
+      }
+    },
+    onSecondaryRateLimit: (retryAfter, options, octokit) => {
+      // does not retry, only logs a warning
+      octokit.log.warn(`SecondaryRateLimit detected for request ${options.method} ${options.url}`);
+    },
+  };
   if (appId && appPrivateKey && appInstallationId) {
-    return new Octokit({
+    return new MyOctokit({
+      throttle: throttle,
       authStrategy: createAppAuth,
       auth: {
         appId: appId,
@@ -42,7 +61,8 @@ function createOctokitInstance(PAT, appId, appPrivateKey, appInstallationId, api
       log: core.isDebug() ? console : null,
     });
   } else {
-    return new Octokit({
+    return new MyOctokit({
+      throttle: throttle,
       auth: PAT,
       baseUrl: apiUrl,
       log: core.isDebug() ? console : null,
